@@ -23,11 +23,12 @@ connection.connect(function (err) {
     afterConnection();
 });
 
+// Display all the available products and relevant info
 function afterConnection() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
         for (i = 0; i < res.length; i++) {
-            console.log(res[i].id + ". " + res[i].product_name);
+            console.log(res[i].id + ". " + " || " + res[i].product_name + " || " + res[i].department_name + " || " + res[i].price + " || " + res[i].stock_quantity);
         }
         start();
     });
@@ -36,25 +37,35 @@ function afterConnection() {
 // function which prompts the user for what action they should take
 function start() {
     inquirer
-        .prompt({
-            name: "goShopping",
-            type: "input",
-            message: "Type a product ID",
-        })
-        // ------------------------------------------------------------
-        // NEED HELP IN THIS PART WITH CONSOLE LOGGING THE USER'S INPUT. SHOULD DISPLAY THE PRODUCT NAME THEY SELECTED
+        .prompt([
+            {
+                name: "goShopping",
+                type: "input",
+                message: "Type a product ID",
+            },
+            {
+                name: "quantity",
+                type: "input",
+                message: "How many would you like to purchase?",
+            }
+        ])
         .then(function (answer) {
-            //console.log("Answer: " + JSON.stringify(answer));
+
             // Make a database call to retrieve products
-            connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function(err, res) {
+            connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function (err, res) {
                 if (err) throw err;
-                //console.log("We found a product! "+ JSON.stringify(res));
+
                 // Display Product
-                if(res.length > 0){
-                    displayProduct(res[0]);
-                }else {
+                if (res.length > 0) {
+                    console.log("You have added " + answer.quantity + " items to your cart");
+
+                    // Quantity available
+                    console.log("Amount in stock: " + res[0].stock_quantity);
+
+                } else {
                     console.log("Sorry but something went wrong.")
                 }
+                connection.end();
             });
         });
 }
