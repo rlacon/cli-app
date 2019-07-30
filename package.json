@@ -1,0 +1,24 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "Online shopping database",
+  "main": "bamazon.js",
+  "dependencies": {
+    "inquirer": "^6.5.0",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node bamazon.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rlacon/cli-app.git"
+  },
+  "author": "rlacon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rlacon/cli-app/issues"
+  },
+  "homepage": "https://github.com/rlacon/cli-app#readme"
+}

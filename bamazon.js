@@ -23,10 +23,31 @@ connection.connect(function (err) {
     afterConnection();
 });
 
-  function afterConnection() {
-    connection.query("SELECT * FROM products", function(err, res) {
-      if (err) throw err;
-      console.log(res);
-      connection.end();
+function afterConnection() {
+    connection.query("SELECT * FROM products", function (err, res) {
+        if (err) throw err;
+        for (i = 0; i < res.length; i++) {
+            console.log(res[i].id + ". " + res[i].product_name);
+        }
+        start();
     });
-  }
+}
+
+// function which prompts the user for what action they should take
+function start() {
+    inquirer
+        .prompt({
+            name: "goShopping",
+            type: "input",
+            message: "Type a product ID",
+        })
+        .then(function (answer) {
+            // based on their answer, show the available products
+            if (answer.goShopping === res[i].id) {
+                console.log("You selected: " + goShopping.response[i]);
+            } else {
+                console.log("else is ran: ")
+                connection.end();
+            }
+        });
+}

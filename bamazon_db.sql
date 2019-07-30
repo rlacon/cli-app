@@ -13,3 +13,5 @@ CREATE TABLE products(
 );
 
 INSERT INTO products (product_name, department_name, price, stock_quantity) values ('Shampoo', 'Health & Beauty', 10.95, 40); 
+INSERT INTO products (product_name, department_name, price, stock_quantity) values ('Soap', 'Health & Beauty', 15.95, 30); 
+INSERT INTO products (product_name, department_name, price, stock_quantity) values ('Mascara', 'Health & Beauty', 20.95, 20); 
