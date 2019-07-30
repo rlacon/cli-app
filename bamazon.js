@@ -41,7 +41,7 @@ function start() {
             {
                 name: "goShopping",
                 type: "input",
-                message: "Type a product ID",
+                message: "Enter the ID of an item you'd like to buy",
             },
             {
                 name: "quantity",
@@ -50,25 +50,37 @@ function start() {
             }
         ])
         .then(function (answer) {
+            // We need to do math to get the new value, we need to parseInt to make sure it's a number and not another format.
+            var quantity = parseInt(answer.quantity);
+            var product = answer.goShopping;
 
             // Make a database call to retrieve products
             connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function (err, res) {
                 if (err) throw err;
 
                 // Display Product
-                if (res.length > 0) {
-                    console.log("You have added " + answer.quantity + " items to your cart");
+                if (res.length > 0 && res[0].stock_quantity > quantity) {
+                    console.log("You have added " + answer.quantity + " of this item to your cart");
+                    updateQuantity(product, quantity);
 
                     // Quantity available
                     console.log("Amount in stock: " + res[0].stock_quantity);
 
                 } else {
-                    console.log("Sorry but something went wrong.")
+                    console.log("Insufficient quantity!")
                 }
                 connection.end();
             });
         });
 }
+
+
+function updateQuantity(product, quantity) {
+    connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantity, product], function(err, res) { 
+        console.log("Quantity updated: " + quantity)
+    });
+};
+
 
 function displayProduct(product) {
     console.log(" ");
