@@ -41,13 +41,30 @@ function start() {
             type: "input",
             message: "Type a product ID",
         })
+        // ------------------------------------------------------------
+        // NEED HELP IN THIS PART WITH CONSOLE LOGGING THE USER'S INPUT. SHOULD DISPLAY THE PRODUCT NAME THEY SELECTED
         .then(function (answer) {
-            // based on their answer, show the available products
-            if (answer.goShopping === res[i].id) {
-                console.log("You selected: " + goShopping.response[i]);
-            } else {
-                console.log("else is ran: ")
-                connection.end();
-            }
+            //console.log("Answer: " + JSON.stringify(answer));
+            // Make a database call to retrieve products
+            connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function(err, res) {
+                if (err) throw err;
+                //console.log("We found a product! "+ JSON.stringify(res));
+                // Display Product
+                if(res.length > 0){
+                    displayProduct(res[0]);
+                }else {
+                    console.log("Sorry but something went wrong.")
+                }
+            });
         });
+}
+
+function displayProduct(product) {
+    console.log(" ");
+    console.log(" ");
+    console.log("Product name: " + product.product_name);
+    console.log("Department name: " + product.department_name);
+    console.log("Price: " + product.price);
+    console.log("Quantity: " + product.stock_quantity);
+    connection.end();
 }
