@@ -15,7 +15,7 @@ var connection = mysql.createConnection({
     database: "bamazon_db"
 });
 
-// connect to the mysql server and sql database
+// Connect to the mysql server and sql database
 connection.connect(function (err) {
     if (err) throw err;
     // run the start function after the connection is made to prompt the user
@@ -50,24 +50,24 @@ function start(res) {
             }
         ])
         .then(function (answer) {
+
+            // Checking to make sure the product ID is valid 
             if ((answer.goShopping > res.length) || (answer.goShopping < 1)) {
                 console.log("You entered an invalid product ID. Please make another selection")
                 afterConnection();
             } else {
-                // We need to do math to get the new value, we need to parseInt to make sure it's a number and not another format.
-                var quantityPurchased = parseInt(answer.quantity);
-                var product = answer.goShopping;
 
                 // Make a database call to retrieve products
                 connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function (err, res) {
+                    console.log(res)
+                    var quantityPurchased = parseInt(answer.quantity);
+                    var product = answer.goShopping;
                     if (err) throw err;
-
-                    // Make sure the product ID is valid
 
                     // Display Product and check if quantity is sufficient
                     if (res.length >= 0 && res[0].stock_quantity >= quantityPurchased) {
                         var newTotal = res[0].stock_quantity - quantityPurchased;
-                        console.log("You have added " + answer.quantityPurchased + " of this item to your cart");
+                        console.log("You have added " + quantityPurchased + " of this item to your cart");
                         updateQuantity(product, newTotal);
 
                         // Updated quantity
@@ -82,7 +82,6 @@ function start(res) {
             }
         });
 }
-
 
 function updateQuantity(product, quantityPurchased) {
     connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantityPurchased, product], function (err, res) {
