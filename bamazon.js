@@ -51,7 +51,7 @@ function start() {
         ])
         .then(function (answer) {
             // We need to do math to get the new value, we need to parseInt to make sure it's a number and not another format.
-            var quantity = parseInt(answer.quantity);
+            var quantityPurchased = parseInt(answer.quantity);
             var product = answer.goShopping;
 
             // Make a database call to retrieve products
@@ -59,9 +59,10 @@ function start() {
                 if (err) throw err;
 
                 // Display Product and check if quantity is sufficient
-                if (res.length > 0 && res[0].stock_quantity >= quantity) {
-                    console.log("You have added " + answer.quantity + " of this item to your cart");
-                    updateQuantity(product, quantity);
+                if (res.length > 0 && res[0].stock_quantity >= quantityPurchased) {
+                    var newTotal = res[0].stock_quantity - quantityPurchased
+                    console.log("You have added " + answer.quantityPurchased + " of this item to your cart");
+                    updateQuantity(product, newTotal);
 
                     // Quantity available
                     console.log("Amount in stock: " + res[0].stock_quantity);
@@ -76,19 +77,19 @@ function start() {
 }
 
 
-function updateQuantity(product, quantity) {
-    connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantity, product], function(err, res) { 
-        console.log("Quantity updated: " + quantity)
+function updateQuantity(product, quantityPurchased) {
+    connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantityPurchased, product], function(err, res) { 
+        console.log("Quantity updated: " + quantityPurchased)
     });
 };
 
 
-function displayProduct(product) {
-    console.log(" ");
-    console.log(" ");
-    console.log("Product name: " + product.product_name);
-    console.log("Department name: " + product.department_name);
-    console.log("Price: " + product.price);
-    console.log("Quantity: " + product.stock_quantity);
-    connection.end();
-}
+// function displayProduct(product) {
+//     console.log(" ");
+//     console.log(" ");
+//     console.log("Product name: " + product.product_name);
+//     console.log("Department name: " + product.department_name);
+//     console.log("Price: " + product.price);
+//     console.log("Quantity: " + product.stock_quantity);
+//     connection.end();
+// }
