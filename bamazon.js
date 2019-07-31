@@ -58,8 +58,8 @@ function start() {
             connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function (err, res) {
                 if (err) throw err;
 
-                // Display Product
-                if (res.length > 0 && res[0].stock_quantity > quantity) {
+                // Display Product and check if quantity is sufficient
+                if (res.length > 0 && res[0].stock_quantity >= quantity) {
                     console.log("You have added " + answer.quantity + " of this item to your cart");
                     updateQuantity(product, quantity);
 
@@ -68,6 +68,7 @@ function start() {
 
                 } else {
                     console.log("Insufficient quantity!")
+                    start();
                 }
                 connection.end();
             });
