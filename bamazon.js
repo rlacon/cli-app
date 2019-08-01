@@ -52,7 +52,6 @@ function start(res) {
             }
         ])
         .then(function (answer) {
-            console.log("answer: " + JSON.stringify(answer));
             // Checking to make sure the inputted productID ID is valid 
             if ((answer.productID > res.length) || (answer.productID < 1)) {
                 console.log("================================================================");
@@ -63,20 +62,23 @@ function start(res) {
 
                 // Make a database call to retrieve products
                 connection.query("SELECT * FROM products WHERE id = " + answer.productID, function (err, res) {
+                    if (err) throw err;
                     var quantityPurchased = parseInt(answer.quantity);
                     var productID = answer.productID;
-                    if (err) throw err;
+                    var originalQuantity = res[0].stock_quantity;
+                    var originalPrice = res[0].price;
 
                     // Display productID and check if quantity is sufficient
-                    if (res.length >= 0 && res[0].stock_quantity >= quantityPurchased) {
-                        var newQuantity = res[0].stock_quantity - quantityPurchased;
+                    if (res.length >= 0 && originalQuantity >= quantityPurchased) {
+                        var newQuantity = originalQuantity - quantityPurchased;
                         console.log("===========================================");
                         console.log("You have added " + quantityPurchased + " of this item to your cart");
                         console.log("===========================================");
-                        updateQuantity(productID, newQuantity, res[0].stock_quantity);
-
-                        // Display current quantity
-                        console.log("Amount in stock: " + res[0].stock_quantity);
+                        updateQuantity(productID, newQuantity);
+                        
+                        // Display the total price value
+                        // let totalPrice = totalPrice();
+                        console.log("Your total price is: $" + totalPrice(originalPrice, quantityPurchased));
                         console.log("===========================================");
 
                     // If quantity isn't sufficient
@@ -92,11 +94,17 @@ function start(res) {
         });
 }
 
+// Adding the total price
+function totalPrice(originalPrice, quantityPurchased) {
+    var totalPrice = originalPrice * quantityPurchased 
+    return totalPrice.toFixed(2);
+}
+
 // Display the updated quantity
-function updateQuantity(productID, newQuantity, originalQuantity) {
+function updateQuantity(productID, newQuantity) {
     connection.query("UPDATE products SET stock_quantity = ? WHERE id = ?", [newQuantity, productID], function (err, res) {
         if(err) throw err;
-        console.log("res: " + JSON.stringify(res));
+        console.log("New quantity: " + newQuantity);
         console.log("===========================================");
     });
 };
