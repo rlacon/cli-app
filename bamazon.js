@@ -28,7 +28,7 @@ function afterConnection() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
         for (i = 0; i < res.length; i++) {
-            console.log(res[i].id + ". " + " || " + res[i].product_name + " || " + res[i].department_name + " || " + res[i].price + " || " + res[i].stock_quantity);
+            console.log("ID: " + res[i].id + ". " + "|| " + res[i].product_name + " || " + res[i].department_name + " || " + res[i].price + " || " + res[i].stock_quantity);
         }
         start(res);
     });
@@ -53,13 +53,14 @@ function start(res) {
 
             // Checking to make sure the product ID is valid 
             if ((answer.goShopping > res.length) || (answer.goShopping < 1)) {
-                console.log("You entered an invalid product ID. Please make another selection")
+                console.log("================================================================");
+                console.log("You entered an invalid product ID. Please make another selection");
+                console.log("================================================================");
                 afterConnection();
             } else {
 
                 // Make a database call to retrieve products
                 connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function (err, res) {
-                    console.log(res)
                     var quantityPurchased = parseInt(answer.quantity);
                     var product = answer.goShopping;
                     if (err) throw err;
@@ -67,14 +68,21 @@ function start(res) {
                     // Display Product and check if quantity is sufficient
                     if (res.length >= 0 && res[0].stock_quantity >= quantityPurchased) {
                         var newTotal = res[0].stock_quantity - quantityPurchased;
+                        console.log("===========================================");
                         console.log("You have added " + quantityPurchased + " of this item to your cart");
+                        console.log("===========================================");
                         updateQuantity(product, newTotal);
 
-                        // Updated quantity
+                        // Current quantity
                         console.log("Amount in stock: " + res[0].stock_quantity);
+                        console.log("===========================================");
 
+
+                        // If quantity isn't sufficient
                     } else {
-                        console.log("Insufficient quantity!")
+                        console.log("==================================================");
+                        console.log("Insufficient quantity! Please enter a valid amount");
+                        console.log("==================================================");
                         start();
                     }
                     connection.end();
@@ -83,9 +91,11 @@ function start(res) {
         });
 }
 
+// Display the updated quantity
 function updateQuantity(product, quantityPurchased) {
     connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantityPurchased, product], function (err, res) {
-        console.log("Quantity updated: " + quantityPurchased)
+        console.log("Quantity updated: " + quantityPurchased);
+        console.log("===========================================");
     });
 };
 
