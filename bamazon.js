@@ -20,6 +20,7 @@ connection.connect(function (err) {
     if (err) throw err;
     // run the start function after the connection is made to prompt the user
     console.log("connected as id " + connection.threadId);
+    console.log("=================================================================");
     afterConnection();
 });
 
@@ -28,7 +29,8 @@ function afterConnection() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
         for (i = 0; i < res.length; i++) {
-            console.log("ID: " + res[i].id + ". " + "|| " + res[i].product_name + " || " + res[i].department_name + " || " + res[i].price + " || " + res[i].stock_quantity);
+            console.log(res[i].id + ". " + "|| " + res[i].product_name + " || " + res[i].department_name + " || " + res[i].price + " || " + res[i].stock_quantity);
+            console.log("=================================================================");
         }
         start(res);
     });
@@ -39,7 +41,7 @@ function start(res) {
     inquirer
         .prompt([
             {
-                name: "goShopping",
+                name: "productID",
                 type: "input",
                 message: "Enter the ID of an item you'd like to buy",
             },
@@ -50,35 +52,34 @@ function start(res) {
             }
         ])
         .then(function (answer) {
-
-            // Checking to make sure the product ID is valid 
-            if ((answer.goShopping > res.length) || (answer.goShopping < 1)) {
+            console.log("answer: " + JSON.stringify(answer));
+            // Checking to make sure the inputted productID ID is valid 
+            if ((answer.productID > res.length) || (answer.productID < 1)) {
                 console.log("================================================================");
-                console.log("You entered an invalid product ID. Please make another selection");
+                console.log("You entered an invalid productID ID. Please make another selection");
                 console.log("================================================================");
                 afterConnection();
             } else {
 
                 // Make a database call to retrieve products
-                connection.query("SELECT * FROM products WHERE id = " + answer.goShopping, function (err, res) {
+                connection.query("SELECT * FROM products WHERE id = " + answer.productID, function (err, res) {
                     var quantityPurchased = parseInt(answer.quantity);
-                    var product = answer.goShopping;
+                    var productID = answer.productID;
                     if (err) throw err;
 
-                    // Display Product and check if quantity is sufficient
+                    // Display productID and check if quantity is sufficient
                     if (res.length >= 0 && res[0].stock_quantity >= quantityPurchased) {
-                        var newTotal = res[0].stock_quantity - quantityPurchased;
+                        var newQuantity = res[0].stock_quantity - quantityPurchased;
                         console.log("===========================================");
                         console.log("You have added " + quantityPurchased + " of this item to your cart");
                         console.log("===========================================");
-                        updateQuantity(product, newTotal);
+                        updateQuantity(productID, newQuantity, res[0].stock_quantity);
 
-                        // Current quantity
+                        // Display current quantity
                         console.log("Amount in stock: " + res[0].stock_quantity);
                         console.log("===========================================");
 
-
-                        // If quantity isn't sufficient
+                    // If quantity isn't sufficient
                     } else {
                         console.log("==================================================");
                         console.log("Insufficient quantity! Please enter a valid amount");
@@ -92,19 +93,20 @@ function start(res) {
 }
 
 // Display the updated quantity
-function updateQuantity(product, quantityPurchased) {
-    connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantityPurchased, product], function (err, res) {
-        console.log("Quantity updated: " + quantityPurchased);
+function updateQuantity(productID, newQuantity, originalQuantity) {
+    connection.query("UPDATE products SET stock_quantity = ? WHERE id = ?", [newQuantity, productID], function (err, res) {
+        if(err) throw err;
+        console.log("res: " + JSON.stringify(res));
         console.log("===========================================");
     });
 };
 
-// function displayProduct(product) {
+// function displayProduct(productID) {
 //     console.log(" ");
 //     console.log(" ");
-//     console.log("Product name: " + product.product_name);
-//     console.log("Department name: " + product.department_name);
-//     console.log("Price: " + product.price);
-//     console.log("Quantity: " + product.stock_quantity);
+//     console.log("productID name: " + productID.product_name);
+//     console.log("Department name: " + productID.department_name);
+//     console.log("Price: " + productID.price);
+//     console.log("Quantity: " + productID.stock_quantity);
 //     connection.end();
 // }
