@@ -58,11 +58,11 @@ function start(res) {
             }
         ])
         .then(function (answer) {
-            
+
             // Checking to make sure the inputted productID ID is valid 
             if ((answer.productID > res.length) || (answer.productID < 1)) {
                 console.log("==================================================================".red);
-                console.log("You entered an invalid productID ID. Please make another selection".red);
+                console.log("You entered an invalid product ID. Please make another selection".red);
                 console.log("==================================================================".red);
                 afterConnection();
             } else {
@@ -83,8 +83,8 @@ function start(res) {
                         console.log("===========================================");
                         updateQuantity(productID, newQuantity);
 
+                        // If quantity is sufficient...
                         // Display the total price value
-                        // let totalPrice = totalPrice();
                         console.log("Your total is: " + "$".green + totalPrice(originalPrice, quantityPurchased));
                         console.log("===========================================");
 
